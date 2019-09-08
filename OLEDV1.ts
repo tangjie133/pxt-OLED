@@ -1,7 +1,7 @@
 //% color="#AA278D"  block="OLEDV1"
 namespace OLEDV1 {
     //% weight=100
-    //% blockId=OLEDv1_INIT
+    //% blockId=OLEDV1_INIT
     //% block="INIT_oled"
     export function initDisplay(): void {
         cmd(0xAE);  // Set display OFF
@@ -30,12 +30,12 @@ namespace OLEDV1 {
         clear();
     }
     //% weight=60
-    //% blockId=OLEDv1_Clear
+    //% blockId=OLEDV1_Clear
     //% block="clear"
     export function clear() {
         cmd(DISPLAY_OFF);   //display off
         for (let j = 0; j < 8; j++) {
-            setTextXY(j);
+            setText(j,0);
             {
                 for (let i = 0; i < 16; i++)  //clear all columns
                 {
@@ -44,11 +44,16 @@ namespace OLEDV1 {
             }
         }
         cmd(DISPLAY_ON);    //display on
-        setTextXY(0);
+        setText(0,0);
     }
-    function setTextXY(A: number) {
-        let r = A;
-        let c = 0;
+    function setText(row: number, column: number) {
+        let r = row;
+        let c = column;
+        if (row < 0) { r = 0 }
+        if (column < 0) { c = 0 }
+        if (row > 7) { r = 7 }
+        if (column > 15) { c = 15 }
+
         cmd(0xB0 + r);            //set page address
         cmd(0x00 + (8 * c & 0x0F));  //set column lower address
         cmd(0x10 + ((8 * c >> 4) & 0x0F));   //set column higher address
@@ -57,21 +62,23 @@ namespace OLEDV1 {
         let c1 = c.charCodeAt(0);
         writeCustomChar(basicFont[c1 - 32]);
     }
-
     //% weight=90
-    //% blockId=OLEDv1_Text
+    //% blockId=OLEDV1_Text
     //% text.defl="DFRobot"
     //% line.min=0 line.max=7
     //% block="OLED show line %line|text %text"
     export function showUserText(line: number, text: string) {
 
 
-        setTextXY(line);
+        setText(line,0);
 
         for (let c of text) {
             putChar(c);
         }
-
+        for (let i = text.length ; i < 16 ;i++) {
+            setText(line, i);
+            putChar(" ");
+        }
     }
 	/**
      * OLED 12864 shows the number
@@ -79,7 +86,7 @@ namespace OLEDV1 {
      * @param n value , eg: 2019
      */
     //% weight=90
-    //% blockId=OLEDv1_Nunber
+    //% blockId=OLEDV1_Nunber
     //% line.min=0 line.max=7
     //% block="OLED show line %line|number %n"
     export function showUserNumber(line: number, n: number) {

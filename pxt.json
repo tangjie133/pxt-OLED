@@ -9,11 +9,11 @@
     },
     "files": [
         "README.md",
-        "OLED1.ts",
+        "OLEDV1.ts",
         "_locales/zh/OLEDV1-strings.json"
     ],
     "testFiles": [
     ],
     "public": false,
-    "installedVersion": "workspace:789df45a-19af-42c5-95bf-52cd330ecd08"
+    "installedVersion": "workspace:c2329477-5911-425f-72ba-ad704602bac6"
 }
